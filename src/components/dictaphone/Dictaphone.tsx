@@ -7,8 +7,9 @@ const Dictaphone = () => {
 
   useEffect(() => {
     // Check if the browser supports SpeechRecognition
+    const castedWindow = window as any;
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      castedWindow.SpeechRecognition || castedWindow.webkitSpeechRecognition;
 
     if (SpeechRecognition) {
       const recognizer = new SpeechRecognition();
@@ -17,7 +18,7 @@ const Dictaphone = () => {
       recognizer.lang = "en-US";
 
       // Event listener for when speech is recognized
-      recognizer.onresult = (event) => {
+      recognizer.onresult = (event: any) => {
         let interimTranscript = "";
         let finalTranscript = "";
 
@@ -32,8 +33,13 @@ const Dictaphone = () => {
         }
 
         setTranscript(finalTranscript + interimTranscript);
-        document.querySelector("#questionField").value =
-          finalTranscript + interimTranscript;
+        // eslint-disable-next-line prefer-const
+        let questionField = document.querySelector("#questionField");
+        // eslint-disable-next-line prefer-const
+        let castedElement = questionField as HTMLInputElement;
+        if (castedElement !== null) {
+          castedElement.value = finalTranscript + interimTranscript;
+        }
       };
 
       setRecognition(recognizer);
@@ -44,14 +50,18 @@ const Dictaphone = () => {
 
   const startListening = () => {
     if (recognition) {
-      recognition.start();
+      // eslint-disable-next-line prefer-const
+      let casted = recognition as any;
+      casted.start();
       setListening(true);
     }
   };
 
   const stopListening = () => {
     if (recognition) {
-      recognition.stop();
+      // eslint-disable-next-line prefer-const
+      let casted = recognition as any;
+      casted.stop();
       setListening(false);
     }
   };

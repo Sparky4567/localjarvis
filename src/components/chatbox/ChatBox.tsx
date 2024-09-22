@@ -49,18 +49,21 @@ class ChatBox extends Component {
     this.setState({ selectedModel: passedValue });
   }
 
-  async ollamaAnswer(passedString: string) {
-    const message = { role: "user", content: passedString };
+  async ollamaAnswer(passedString: string | null) {
+    const message = { role: "user", content: String(passedString) };
     const response = await ollama.chat({
       model: String(this.state.selectedModel),
       messages: [message],
       stream: true,
     });
     const chatSel = document.querySelector("#chatBox");
+    // eslint-disable-next-line prefer-const
+    let inputElement = chatSel as HTMLInputElement;
+
     for await (const part of response) {
-      chatSel.value = chatSel.value + part.message.content;
+      inputElement.value = inputElement.value + part.message.content;
     }
-    chatSel.value = chatSel.value + "\n\n";
+    inputElement.value = inputElement.value + "\n\n";
   }
 
   async listModels() {
@@ -93,7 +96,7 @@ class ChatBox extends Component {
                 this.modelChange(selected);
               }}
             >
-              {this.state.availableModels.map((mod, ind) => {
+              {this.state.availableModels.map((mod: any, ind) => {
                 return <option key={ind}>{mod.name}</option>;
               })}
             </select>
